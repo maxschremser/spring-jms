@@ -1,0 +1,10 @@
+dependencies {
+    compile project(':core')
+}
+
+apply plugin: 'application'
+mainClassName = "com.schremser.spring.jms.client.JmsClient"
+
+run {
+    standardInput = System.in
+}
