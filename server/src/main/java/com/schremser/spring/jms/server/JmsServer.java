@@ -9,6 +9,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
@@ -26,14 +27,18 @@ import java.io.IOException;
 @SpringBootApplication
 @Import(JndiConfiguration.class)
 @PropertySource("classpath:default.properties")
+@ComponentScan("com.schremser.spring.jms.server")
 public class JmsServer {
     private final static Logger log = LoggerFactory.getLogger(JmsServer.class);
 
     @Autowired JndiConfiguration jndi;
+    QueueMessageReceiver queueMessageReceiver;
 
     @Bean
     public QueueMessageReceiver queueMessageReceiver() {
-        return new QueueMessageReceiver();
+        if (queueMessageReceiver == null)
+            queueMessageReceiver = new QueueMessageReceiver();
+        return queueMessageReceiver;
     }
 
     @Bean
