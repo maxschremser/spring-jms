@@ -7,18 +7,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.jmx.export.MBeanExporter;
 import org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource;
 import org.springframework.jmx.export.assembler.MetadataMBeanInfoAssembler;
 import org.springframework.jmx.export.naming.MetadataNamingStrategy;
 import org.springframework.jmx.support.JmxUtils;
-import org.springframework.jmx.support.MBeanServerFactoryBean;
 
 import javax.jms.Destination;
 import javax.management.MBeanServer;
@@ -32,13 +31,10 @@ public class JmsServer {
     private final static Logger log = LoggerFactory.getLogger(JmsServer.class);
 
     @Autowired JndiConfiguration jndi;
-    QueueMessageReceiver queueMessageReceiver;
 
     @Bean
     public QueueMessageReceiver queueMessageReceiver() {
-        if (queueMessageReceiver == null)
-            queueMessageReceiver = new QueueMessageReceiver();
-        return queueMessageReceiver;
+        return new QueueMessageReceiver();
     }
 
     @Bean
@@ -56,21 +52,30 @@ public class JmsServer {
         return defaultMessageListenerContainer;
     }
 
-    @Override
-    public String toString() {
-        return jndi.toString();
+    @Bean
+    public JmsTemplate jmsSenderTemplate() {
+        JmsTemplate jmsTemplate = new JmsTemplate(jndi.connectionFactoryProxy());
+        jmsTemplate.setSessionTransacted(false);
+        jmsTemplate.setReceiveTimeout(5000);
+        jmsTemplate.setDefaultDestination((Destination) jndi.importQueue().getObject());
+        return jmsTemplate;
     }
 
-    public static void main(String[] args) throws IOException {
-        ConfigurableApplicationContext context = SpringApplication.run(JmsServer.class);
-        log.info("Waiting for requests ...");
-        AnnotationJmxAttributeSource ajas = new AnnotationJmxAttributeSource();
+    @Bean
+    MBeanExporter mBeanExporter() {
         MBeanExporter exporter = new MBeanExporter();
+        AnnotationJmxAttributeSource attributeSource = new AnnotationJmxAttributeSource();
         exporter.setAutodetect(true);
-        exporter.setAssembler(new MetadataMBeanInfoAssembler(ajas));
-        exporter.setNamingStrategy(new MetadataNamingStrategy(ajas));
+        exporter.setAssembler(new MetadataMBeanInfoAssembler(attributeSource));
+        exporter.setNamingStrategy(new MetadataNamingStrategy(attributeSource));
         MBeanServer server = JmxUtils.locateMBeanServer();
         log.info("JMX Server is " + server.getDefaultDomain());
         exporter.setServer(server);
+        return exporter;
+    }
+
+    public static void main(String[] args) throws IOException {
+        SpringApplication.run(JmsServer.class);
+        log.info("Waiting for requests ...");
     }
 }
