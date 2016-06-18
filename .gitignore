@@ -1,1 +1,10 @@
 # Created by .ignore support plugin (hsz.mobi)
+jms
+lib
+spring-jms.iml
+spring-jms.ipr
+spring-jms.iws
+.idea
+.gradle
+build
+gradle*
