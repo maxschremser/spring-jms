@@ -2,6 +2,7 @@ package com.schremser.spring.jms.server;
 
 import com.schremser.spring.jms.core.JndiConfiguration;
 import com.schremser.spring.jms.server.receiver.QueueMessageReceiver;
+import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,6 @@ public class JmsServerMgmt {
         return jndi.toString();
     }
 
-
     @ManagedAttribute(description = "Processed Messages")
     public int getProcessed() {
         return queueMessageReceiver.getProcessed();
@@ -53,6 +53,23 @@ public class JmsServerMgmt {
                 return session.createTextMessage(message);
             }
         };
+    }
+
+    @ManagedAttribute(description = "Uptime")
+    public String getUptime() {
+        return DurationFormatUtils.formatDuration(server.stopWatch.getTime(), "H:mm:ss");
+    }
+
+    @ManagedOperation(description = "Start the Server")
+    public String startServer() {
+        server.start();
+        return "Server is " + (server.running ? "not " : "") + "running.";
+    }
+
+    @ManagedOperation(description = "Stop the Server")
+    public String stopServer() {
+        server.stop();
+        return "Server is " + (server.running ? "not " : "") + "running.";
     }
 
 }

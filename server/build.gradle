@@ -1,6 +1,11 @@
 dependencies {
     compile project(':core')
+    compile 'org.apache.commons:commons-lang3:3.4'
 }
 
 apply plugin: 'application'
 mainClassName = "com.schremser.spring.jms.server.JmsServer"
+applicationDefaultJvmArgs= ["-Dcom.sun.management.jmxremote=true",
+                            "-Dcom.sun.management.jmxremote.port=1099",
+                            "-Dcom.sun.management.jmxremote.authenticate=false",
+                            "-Dcom.sun.management.jmxrgradlemote.ssl=false"]
