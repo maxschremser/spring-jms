@@ -1,0 +1,1 @@
+def qcf(QueueConnectionFactory) qmgr(QMGR_TEST) transport(CLIENT) host(localhost) channel(NOSSL.SVRCONN) port(1414)

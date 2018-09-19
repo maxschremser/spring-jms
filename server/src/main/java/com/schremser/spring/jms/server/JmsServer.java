@@ -30,7 +30,6 @@ import java.io.IOException;
 @SpringBootApplication
 @Import(JndiConfiguration.class)
 @PropertySource("classpath:default.properties")
-@ComponentScan("com.schremser.spring.jms.server")
 public class JmsServer implements Runnable, Lifecycle {
     private final static Logger log = LoggerFactory.getLogger(JmsServer.class);
     boolean running;
@@ -61,7 +60,7 @@ public class JmsServer implements Runnable, Lifecycle {
     DefaultMessageListenerContainer queueMessageListener() {
         DefaultMessageListenerContainer defaultMessageListenerContainer = new DefaultMessageListenerContainer();
         defaultMessageListenerContainer.setConnectionFactory(jndi.connectionFactoryProxy());
-        defaultMessageListenerContainer.setDestination((Destination) jndi.importQueue().getObject());
+        defaultMessageListenerContainer.setDestination((Destination) jndi.requestQueue().getObject());
         defaultMessageListenerContainer.setSessionTransacted(true);
         defaultMessageListenerContainer.setConcurrentConsumers(1);
         defaultMessageListenerContainer.setMaxConcurrentConsumers(7);
@@ -77,7 +76,7 @@ public class JmsServer implements Runnable, Lifecycle {
         JmsTemplate jmsTemplate = new JmsTemplate(jndi.connectionFactoryProxy());
         jmsTemplate.setSessionTransacted(false);
         jmsTemplate.setReceiveTimeout(5000);
-        jmsTemplate.setDefaultDestination((Destination) jndi.importQueue().getObject());
+        jmsTemplate.setDefaultDestination((Destination) jndi.requestQueue().getObject());
         return jmsTemplate;
     }
 

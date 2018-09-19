@@ -29,8 +29,8 @@ public class JndiConfiguration {
     @Value("${jms.connection.factory}") private String connectionFactory;
 
     // Queues
-    @Value("${jms.queue.import}") private String importQueue;
-    @Value("${jms.queue.export}") private String exportQueue;
+    @Value("${jms.queue.request}") private String requestQueue;
+    @Value("${jms.queue.response}") private String responseQueue;
 
     @Bean
     public JndiTemplate jndiTemplate() {
@@ -55,18 +55,18 @@ public class JndiConfiguration {
     }
 
     @Bean
-    public JndiObjectFactoryBean importQueue() {
+    public JndiObjectFactoryBean requestQueue() {
         JndiObjectFactoryBean factoryBean = new JndiObjectFactoryBean();
         factoryBean.setJndiTemplate(jndiTemplate());
-        factoryBean.setJndiName(importQueue);
+        factoryBean.setJndiName(requestQueue);
         return factoryBean;
     }
 
     @Bean
-    public JndiObjectFactoryBean exportQueue() {
+    public JndiObjectFactoryBean responseQueue() {
         JndiObjectFactoryBean factoryBean = new JndiObjectFactoryBean();
         factoryBean.setJndiTemplate(jndiTemplate());
-        factoryBean.setJndiName(exportQueue);
+        factoryBean.setJndiName(responseQueue);
         return factoryBean;
     }
 
@@ -77,8 +77,8 @@ public class JndiConfiguration {
 
     @Override
     public String toString() {
-        return "JndiConfiguration{jms.queue.import=" + importQueue +
-                ", jms.queue.export=" + exportQueue +
+        return "JndiConfiguration{jms.queue.import=" + requestQueue +
+                ", jms.queue.export=" + responseQueue +
                 ", java.naming.factory.initial=" + initialContextFactory +
                 ", java.naming.provider.url=" + providerUrl +
                 ", java.naming.security.principal=" + securityPrincipal +

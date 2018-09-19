@@ -9,7 +9,7 @@ import javax.jms.TextMessage;
 
 public class QueueMessageReceiver implements MessageListener {
     private final static Logger log = LoggerFactory.getLogger(QueueMessageReceiver.class);
-    @Value("${jms.queue.import}") private String importQueue;
+    @Value("${jms.queue.request}") private String requestQueue;
     int processed;
 
     @Override
@@ -17,7 +17,7 @@ public class QueueMessageReceiver implements MessageListener {
         TextMessage textMessage;
         try {
             textMessage = (TextMessage) message;
-            log.info("Queue{\"queue\": \"{}\", \"content\": \"{}\"}", importQueue, textMessage.getText());
+            log.info("Queue{\"queue\": \"{}\", \"content\": \"{}\"}", requestQueue, textMessage.getText());
             processed++;
         } catch (Exception e) {
             log.error("Message could not be read. {0}", new Object[]{e});

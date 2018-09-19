@@ -35,7 +35,7 @@ public class JmsClient {
         JmsTemplate jmsTemplate = new JmsTemplate(jndi.connectionFactoryProxy());
         jmsTemplate.setSessionTransacted(false);
         jmsTemplate.setReceiveTimeout(5000);
-        jmsTemplate.setDefaultDestination((Destination) jndi.importQueue().getObject());
+        jmsTemplate.setDefaultDestination((Destination) jndi.requestQueue().getObject());
         return jmsTemplate;
     }
 
